@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
+import 'package:dio/dio.dart';
 
 class ApiClient {
-  final _client = HttpClient();
+  final Dio _dio = Dio();
   static const _host = 'https://api.themoviedb.org/3';
   static const _imageUrl = 'https://image.tmdb.org/t/p/w500';
   static const _apiKey = 'f59807f364e102d7cd2816d61804efc0';
@@ -35,11 +35,15 @@ class ApiClient {
       '/authentication/token/new',
       <String, dynamic>{'api_key': _apiKey},
     );
-    final request = await _client.getUrl(url);
-    final response = await request.close();
-    final json = (await response.jsonDecode()) as Map<String, dynamic>;
-    final token = json['request_token'] as String;
-    return token;
+
+    try {
+      final response = await _dio.getUri(url);
+      final json = response.data as Map<String, dynamic>;
+      final token = json['request_token'] as String;
+      return token;
+    } catch (error) {
+      throw Exception('Failed to obtain request token: $error');
+    }
   }
 
   Future<String> _validateUser({
@@ -56,15 +60,15 @@ class ApiClient {
       'password': password,
       'request_token': requestToken,
     };
-    final request = await _client.postUrl(url);
 
-    request.headers.contentType = ContentType.json;
-    request.write(jsonEncode(parameters));
-    final response = await request.close();
-    final json = (await response.jsonDecode()) as Map<String, dynamic>;
-
-    final token = json['request_token'] as String;
-    return token;
+    try {
+      final response = await _dio.postUri(url, data: jsonEncode(parameters));
+      final json = response.data as Map<String, dynamic>;
+      final token = json['request_token'] as String;
+      return token;
+    } catch (error) {
+      throw Exception('Failed to validate user: $error');
+    }
   }
 
   Future<String> _makeSession({
@@ -77,23 +81,14 @@ class ApiClient {
     final parameters = <String, dynamic>{
       'request_token': requestToken,
     };
-    final request = await _client.postUrl(url);
 
-    request.headers.contentType = ContentType.json;
-    request.write(jsonEncode(parameters));
-    final response = await request.close();
-    final json = (await response.jsonDecode()) as Map<String, dynamic>;
-
-    final sessionId = json['session_id'] as String;
-    return sessionId;
-  }
-}
-
-extension HttpClientResponseJsonDecode on HttpClientResponse {
-  Future<dynamic> jsonDecode() async {
-    return transform(utf8.decoder)
-        .toList()
-        .then((value) => value.join())
-        .then<dynamic>((v) => json.decode(v));
+    try {
+      final response = await _dio.postUri(url, data: jsonEncode(parameters));
+      final json = response.data as Map<String, dynamic>;
+      final sessionId = json['session_id'] as String;
+      return sessionId;
+    } catch (error) {
+      throw Exception('Failed to create session: $error');
+    }
   }
 }

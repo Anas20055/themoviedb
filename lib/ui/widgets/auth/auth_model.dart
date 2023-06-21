@@ -1,6 +1,7 @@
 import 'package:lazy_oad/domain/api_client/api_client.dart';
 import 'package:lazy_oad/domain/data_providers/session_data_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:lazy_oad/ui/navigation/main_navigation.dart';
 import 'package:pedantic/pedantic.dart';
 
 class AuthModel extends ChangeNotifier {
@@ -50,7 +51,7 @@ class AuthModel extends ChangeNotifier {
       return;
     }
     await _sessionDataProvider.setSessionId(sessionId);
-    unawaited(Navigator.of(context).pushNamed('/main_screen'));
+    unawaited(Navigator.of(context).pushReplacementNamed(MainNavigationRouteNames.mainScreen));
   }
 }
 

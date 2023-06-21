@@ -1,5 +1,6 @@
 import 'package:lazy_oad/resources/resources.dart';
 import 'package:flutter/material.dart';
+import 'package:lazy_oad/ui/navigation/main_navigation.dart';
 
 class TVShow {
   final int id;
@@ -167,7 +168,7 @@ class _TWShowListWidgetState extends State<TWShowListWidget> {
   void _onMovieTap(int index) {
     final id = _movies[index].id;
     Navigator.of(context).pushNamed(
-      '/main_screen/movie_details',
+      MainNavigationRouteNames.movieDetails,
       arguments: id,
     );
   }

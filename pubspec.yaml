@@ -32,6 +32,8 @@ dependencies:
     sdk: flutter
   pedantic: ^1.11.0
   flutter_secure_storage: ^4.2.0
+  dio: ^4.0.0
+  shared_preferences: ^2.1.2
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -1,13 +1,23 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class _Keys {
   static const sessionId = 'session_id';
 }
 
 class SessionDataProvider {
-  static const _secureStorage = FlutterSecureStorage();
+  static final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  Future<String?> getSessionId() => _secureStorage.read(key: _Keys.sessionId);
-  Future<void> setSessionId(String value) =>
-      _secureStorage.write(key: _Keys.sessionId, value: value);
+  Future<String?> getSessionId() async {
+    final SharedPreferences prefs = await _prefs;
+    return prefs.getString(_Keys.sessionId);
+  }
+
+  Future<void> setSessionId(String? value) async {
+    final SharedPreferences prefs = await _prefs;
+    if (value != null) {
+      await prefs.setString(_Keys.sessionId, value);
+    } else {
+      await prefs.remove(_Keys.sessionId);
+    }
+  }
 }
